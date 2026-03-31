@@ -23,7 +23,7 @@ class Spaceship(SphereCollideObject):
     # Initialises Spaceship/Hero Class
     def __init__(self, loader: Loader, taskMgr: TaskManager, accept: Callable[[str, Callable], None], 
                  modelPath: str, parentNode: NodePath, nodeName: str, texPath: str, posVec: Vec3, 
-                 scaleVec: float):
+                 scaleVec: float, traverser: CollisionTraverser):
 
         super().__init__(loader, modelPath, parentNode, nodeName, Vec3(0,0,0), 1)
 
@@ -36,6 +36,7 @@ class Spaceship(SphereCollideObject):
         Object.selflessInit(loader, nodeName, texPath, posVec, scaleVec, self.a)
 
         self.shipThrustSpeed = 5
+        self.shipTurnRate = 0.5
 
         # Runs function to set player input keys
         self.setKeyBindings()
@@ -47,15 +48,14 @@ class Spaceship(SphereCollideObject):
         self.cntExplode = 0
         self.explodeIntervals = {}
 
-        #self.traverser = traverser
-        self.traverser = CollisionTraverser()
+        self.taskManager.add(self.CheckIntervals, 'checkMissiles', 34)
+
+        self.traverser = traverser
 
         self.handler = CollisionHandlerEvent()
 
         self.handler.addInPattern('into')
         self.accept('into', self.HandleInto)
-
-        self.taskManager.add(self.CheckIntervals, 'checkMissiles', 34)
 
         self.EnableHUD()
 
@@ -68,6 +68,9 @@ class Spaceship(SphereCollideObject):
 
         self.accept('r', self.thrustRate, [1])
         self.accept('r-up', self.thrustRate, [0])
+
+        self.accept('g', self.turnRate, [1])
+        self.accept('g-up', self.turnRate, [0])
 
         # Left-Right turning
         self.accept('a', self.leftTurn, [1])
@@ -129,7 +132,7 @@ class Spaceship(SphereCollideObject):
         print("fromNode: " + fromNode)
         intoNode = entry.getIntoNodePath().getName()
         print("intoNode: " + intoNode)
-        intoPosition = Vec3(entry.getSurfacePoint(self.render))
+        intoPosition = Vec3(entry.getSurfacePoint(self.modelNode.getParent()))
 
         tempVar = fromNode.split("_")
         print("tempVar: " + str(tempVar))
@@ -147,15 +150,16 @@ class Spaceship(SphereCollideObject):
 
         if(strippedString == "Drone" or strippedString == "Planet" or 
            strippedString =="Space Station"):
-            print(victim, ' hit at ', intoPosition)
-            self.DestroyObject(victim, intoPosition)
+            print(victim, 'hit at', intoPosition)
+            self.ObjectDestroy(victim, intoPosition)
 
-        print(shooter + 'is DONE.')
+        print(shooter + ' is DONE.')
         Missile.Intervals[shooter].finish()
 
     def ObjectDestroy(self, hitID, hitPosition):
+        self.SetParticles()
         # Unity also has a find method
-        nodeID = self.render.find(hitID)
+        nodeID = self.modelNode.getParent().find(hitID)
         nodeID.detachNode()
 
         # Start the explosion
@@ -179,9 +183,9 @@ class Spaceship(SphereCollideObject):
     def SetParticles(self):
         base.enableParticles()
         self.explodeEffect = ParticleEffect("Assets/ParticleEffects/Explosions/basic_xpld_efx.ptf")
-        self.explodeEffect.loadConfig()
+        self.explodeEffect.loadConfig("Assets/Particles/basic_xpld_efx.ptf")
         self.explodeEffect.setScale(20)
-        self.explodeNode = self.render.attachNewNode("ExplosionEffect")
+        self.explodeNode = self.modelNode.getParent().attachNewNode("ExplosionEffect")
 
     def CheckIntervals(self, task):
         for I in Missile.Intervals:
@@ -244,7 +248,14 @@ class Spaceship(SphereCollideObject):
             self.shipThrustSpeed = 20
         else:
             self.shipThrustSpeed = 5
-    
+
+    def turnRate(self, keyDown):
+        """ Adds tasks that change the ships rotation """
+        if keyDown:
+            self.shipTurnRate = 0.20
+        else:
+            self.shipTurnRate = 0.5
+
     def leftTurn(self, keyDown):
         """ Adds tasks that turn the ship left """
         if keyDown:
@@ -254,7 +265,7 @@ class Spaceship(SphereCollideObject):
 
     def applyLeftTurn(self, keyDown):
         """ Turns the ship left """
-        rate = .5
+        rate = self.shipTurnRate
         self.modelNode.setR(self.modelNode, rate)
         return Task.cont
 
@@ -267,7 +278,7 @@ class Spaceship(SphereCollideObject):
 
     def applyRightTurn(self, keyDown):
         """ Turns the ship right """
-        rate = -.5
+        rate = -self.shipTurnRate
         self.modelNode.setR(self.modelNode, rate)
         return Task.cont
 
@@ -306,7 +317,7 @@ class Spaceship(SphereCollideObject):
 
     def applyUpTurn(self, keyDown):
         """ Turns the ship upward """
-        rate = .5
+        rate = self.shipTurnRate
         self.modelNode.setP(self.modelNode, rate)
         return Task.cont
 
@@ -319,7 +330,7 @@ class Spaceship(SphereCollideObject):
 
     def applyDownTurn(self, keyDown):
         """ Turns the ship downward """
-        rate = -.5
+        rate = -self.shipTurnRate
         self.modelNode.setP(self.modelNode, rate)
         return Task.cont 
     
@@ -332,7 +343,7 @@ class Spaceship(SphereCollideObject):
 
     def applyLeftRot(self, keyDown):
         """ Rotates the ship left """
-        rate = .5
+        rate = self.shipTurnRate
         self.modelNode.setH(self.modelNode, rate)
         return Task.cont
 
@@ -345,6 +356,6 @@ class Spaceship(SphereCollideObject):
 
     def applyRightRot(self, keyDown):
         """ Rotates the ship right """
-        rate = -.5
+        rate = -self.shipTurnRate
         self.modelNode.setH(self.modelNode, rate)
         return Task.cont

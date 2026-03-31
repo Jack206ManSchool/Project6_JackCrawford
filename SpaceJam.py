@@ -15,6 +15,7 @@ import Player as playerClasses
 
 # Push "V" to toggle between first and third person
 # Hold "R" to speed up
+# Hold "G" for precise aimming
 
 class SpJm(ShowBase):
 
@@ -28,11 +29,11 @@ class SpJm(ShowBase):
         # Toggles being in first or third person
         self.viewMode = True
 
-        # Creates game objects
-        self.SetScene()
-
         self.cTrav = CollisionTraverser()
         self.cTrav.traverse(self.render)
+
+        # Creates game objects
+        self.SetScene()
 
         self.pusher = CollisionHandlerPusher()
         self.pusher.addCollider(self.Hero.collisionNode, self.Hero.modelNode)
@@ -111,7 +112,7 @@ class SpJm(ShowBase):
                                                         "Assets/Spaceships/Dumbledore.x", 
                                                         self.render, "Hero", 
                                                         "Assets/Spaceships/spacejet_C.png", 
-                                                        (-1050, -212, -700), 75)
+                                                        (-1050, -212, -700), 75, self.cTrav)
         
     def changeView(self):
         """ Sets camera to be first person or third person """
