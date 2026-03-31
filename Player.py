@@ -161,6 +161,7 @@ class Spaceship(SphereCollideObject):
         # Unity also has a find method
         nodeID = self.modelNode.getParent().find(hitID)
         nodeID.detachNode()
+        #nodeID.setPos(nodeID.getPos() + Vec3(0, 20, 0))
 
         # Start the explosion
         self.explodeNode.setPos(hitPosition)
@@ -172,6 +173,7 @@ class Spaceship(SphereCollideObject):
 
         self.explodeIntervals[tag] = LerpFunc(self.ExplodeLight, duration = 4.0)
         self.explodeIntervals[tag].start()
+        print(self.explodeIntervals[tag])
 
     def ExplodeLight(self, t):
         if t == 1.0 and self.explodeEffect:

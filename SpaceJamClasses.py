@@ -61,6 +61,7 @@ class Drone(SphereCollideObject):
 
         Object.selflessInit(loader, nodeName, texPath, posVec, scaleVec, a)
 
+
 class Missile(SphereCollideObject):
 
     fireModels = {}

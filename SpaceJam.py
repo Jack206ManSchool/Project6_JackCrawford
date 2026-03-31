@@ -51,15 +51,19 @@ class SpJm(ShowBase):
 
         # Creates drones
         for j in range(fullCycle):
-            # Makes sure each planet's drone has unique IDS
-            spaceJamClasses.Drone.droneCount += 1
-            nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)
-
-            # Creates drones
+            nickName = self.droneNumberUpdate()
             self.drawCloudDefense(self.SpaceStation1, nickName)
+        for j in range(fullCycle):
+            nickName = self.droneNumberUpdate()
             self.drawBaseballSeams(self.Planet1, nickName, j, fullCycle, 2)
+        for j in range(fullCycle):
+            nickName = self.droneNumberUpdate()
             self.drawCircleX(self.Planet4, nickName, j, fullCycle, 3)
+        for j in range(fullCycle):       
+            nickName = self.droneNumberUpdate()
             self.drawCircleY(self.Planet5, nickName, j, fullCycle, 1)
+        for j in range(fullCycle):           
+            nickName = self.droneNumberUpdate()
             self.drawCircleZ(self.Planet6, nickName, j, fullCycle, 3)
 
         # Sets up camera
@@ -73,6 +77,11 @@ class SpJm(ShowBase):
 
         # Sets input for changing viewmode
         self.accept('v', self.changeView)
+
+    def droneNumberUpdate(self):
+        """# Makes sure each planet's drone has unique IDS"""
+        spaceJamClasses.Drone.droneCount += 1
+        return "Drone" + str(spaceJamClasses.Drone.droneCount)
 
     def SetScene(self):
         """Creates all game objects for the scene"""
