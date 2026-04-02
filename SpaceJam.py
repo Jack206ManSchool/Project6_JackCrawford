@@ -1,5 +1,6 @@
 from direct.showbase.ShowBase import ShowBase
 
+from panda3d.core import Vec3
 from panda3d.core import CollisionTraverser, CollisionHandlerPusher
 from panda3d.core import SamplerState
 
@@ -20,6 +21,7 @@ import Player as playerClasses
 class SpJm(ShowBase):
 
     def __init__(self):
+
         ShowBase.__init__(self)
 
         # Toggles if you see the Debug Axis Arrows 
@@ -52,7 +54,7 @@ class SpJm(ShowBase):
         # Creates drones
         for j in range(fullCycle):
             nickName = self.droneNumberUpdate()
-            self.drawCloudDefense(self.SpaceStation1, nickName)
+            self.drawCloudDefense(self.SpaceStation1, nickName, 1250)
         for j in range(fullCycle):
             nickName = self.droneNumberUpdate()
             self.drawBaseballSeams(self.Planet1, nickName, j, fullCycle, 2)
@@ -66,8 +68,15 @@ class SpJm(ShowBase):
             nickName = self.droneNumberUpdate()
             self.drawCircleZ(self.Planet6, nickName, j, fullCycle, 3)
 
+        self.menuSetCamera()
+
+        self.accept('enter', self.initPart2)
+
+    def initPart2(self):
+
         # Sets up camera
-        self.SetCamera()
+        self.heroSetCamera()
+        print(self.Hero.modelNode.getPos())
   
         # Sets the input keys 1, 2, 3, 4 to change the universe skybox
         self.accept("1", self.UniverseBlue)
@@ -78,6 +87,26 @@ class SpJm(ShowBase):
         # Sets input for changing viewmode
         self.accept('v', self.changeView)
 
+        # Runs function to set player input keys
+        self.Hero.setKeyBindings()
+        self.Hero.EnableHUD()
+
+    def menuSetCamera(self):
+        """ Prepares Camera for use on the Menu """
+        self.disableMouse()
+        self.camera.reparentTo(self.Menu.modelNode)
+        self.Menu.modelNode.setHpr(-90, 0, -90)
+        self.Menu.modelNode.setFluidPos(self.Menu.modelNode.getPos() + Vec3(-340, 0, 900))
+        self.camera.setFluidPos(0, 0, 0)
+        self.camera.setH(self.camera, 65)
+
+    def heroSetCamera(self):
+        """ Prepares Camera for use on the Player """
+        self.disableMouse()
+        self.camera.reparentTo(self.Hero.modelNode)
+        self.camera.setFluidPos(0.325, 0, -0.35)
+        self.camera.setHpr(0, 270, 0)
+
     def droneNumberUpdate(self):
         """# Makes sure each planet's drone has unique IDS"""
         spaceJamClasses.Drone.droneCount += 1
@@ -85,6 +114,10 @@ class SpJm(ShowBase):
 
     def SetScene(self):
         """Creates all game objects for the scene"""
+
+        self.Menu = spaceJamClasses.Object(self.loader, "Assets/Spaceships/Dumbledore.x", 
+                                              self.render, "Menu", "Assets/Planets/Planet6.png", 
+                                              (-1415.74, -225.423, -672.359), 25)
 
         # Creates Skybox / Universe
         self.Universe = spaceJamClasses.Universe(self.loader, "Assets/Universe/Universe.x", self.render, 
@@ -127,17 +160,10 @@ class SpJm(ShowBase):
         """ Sets camera to be first person or third person """
         if(self.viewMode):
             self.viewMode = False
-            self.camera.setFluidPos(0, 0, 10)
+            self.camera.setFluidPos(0.325, 0, 10)
         else:
             self.viewMode = True
-            self.camera.setFluidPos(0, 0, 0)
-
-    def SetCamera(self):
-        """ Prepares Camera for use on the Player """
-        self.disableMouse()
-        self.camera.reparentTo(self.Hero.modelNode)
-        self.camera.setFluidPos(0, 0, 0)
-        self.camera.setHpr(0, 270, 0)
+            self.camera.setFluidPos(0.325, 0, -0.35)
 
     def drawDebugAxis(self):
         """ Creates Debug Axis Lines/Guide """
@@ -175,11 +201,11 @@ class SpJm(ShowBase):
         unitVec = defensePaths.BaseballSeams(step, numSeams, B = 0.4)
         self.droneify(unitVec, centralObject, droneName, radius)
 
-    def drawCloudDefense(self, centralObject, droneName):
+    def drawCloudDefense(self, centralObject, droneName, scale):
         """ Creates a Cloud Frone Formation """
         unitVec = defensePaths.Cloud()
         unitVec.normalize()
-        position = unitVec * 500 + centralObject.modelNode.getPos()
+        position = unitVec * scale + centralObject.modelNode.getPos()
 
         spaceJamClasses.Drone(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.render,
                               droneName, "Assets/DroneDefender/octotoad1_auv.png", position, 10)

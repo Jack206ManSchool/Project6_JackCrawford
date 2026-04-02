@@ -38,9 +38,6 @@ class Spaceship(SphereCollideObject):
         self.shipThrustSpeed = 5
         self.shipTurnRate = 0.5
 
-        # Runs function to set player input keys
-        self.setKeyBindings()
-
         self.reloadTime = .25
         self.missileDistance = 4000 # Until the missile explodes.
         self.missileBay = 1 # Only one missile in the missile bay to be launched.
@@ -57,7 +54,7 @@ class Spaceship(SphereCollideObject):
         self.handler.addInPattern('into')
         self.accept('into', self.HandleInto)
 
-        self.EnableHUD()
+
 
     def setKeyBindings(self):
         """ All of our keybindings for our ship's movement """
