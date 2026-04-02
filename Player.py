@@ -54,40 +54,41 @@ class Spaceship(SphereCollideObject):
         self.handler.addInPattern('into')
         self.accept('into', self.HandleInto)
 
-
-
-    def setKeyBindings(self):
+    def setKeyBindings(self, controlConfig):
         """ All of our keybindings for our ship's movement """
 
         # Forward movement
-        self.accept('space', self.Thrust, [1])
-        self.accept('space-up', self.Thrust, [0])
+        self.accept(controlConfig["forward"], self.Thrust, [1])
+        self.accept(controlConfig["forward"] + '-up', self.Thrust, [0])
 
-        self.accept('r', self.thrustRate, [1])
-        self.accept('r-up', self.thrustRate, [0])
+        # Run/Speedup
+        self.accept(controlConfig["run"], self.thrustRate, [1])
+        self.accept(controlConfig["run"] + '-up', self.thrustRate, [0])
 
-        self.accept('g', self.turnRate, [1])
-        self.accept('g-up', self.turnRate, [0])
+        # Precise / Focus
+        self.accept(controlConfig["precise"], self.turnRate, [1])
+        self.accept(controlConfig["precise"] + '-up', self.turnRate, [0])
 
         # Left-Right turning
-        self.accept('a', self.leftTurn, [1])
-        self.accept('a-up', self.leftTurn, [0])
-        self.accept('d', self.rightTurn, [1])
-        self.accept('d-up', self.rightTurn, [0])
+        self.accept(controlConfig["leftTurn"], self.leftTurn, [1])
+        self.accept(controlConfig["leftTurn"] + '-up', self.leftTurn, [0])
+        self.accept(controlConfig["rightTurn"], self.rightTurn, [1])
+        self.accept(controlConfig["rightTurn"] + '-up', self.rightTurn, [0])
 
         # Left-Right rotation
-        self.accept('q', self.leftRot, [1])
-        self.accept('q-up', self.leftRot, [0])
-        self.accept('e', self.rightRot, [1])
-        self.accept('e-up', self.rightRot, [0])
+        self.accept(controlConfig["leftRot"], self.leftRot, [1])
+        self.accept(controlConfig["leftRot"] + '-up', self.leftRot, [0])
+        self.accept(controlConfig["rightRot"], self.rightRot, [1])
+        self.accept(controlConfig["rightRot"] + '-up', self.rightRot, [0])
 
         # Up-Down turning
-        self.accept('w', self.upTurn, [1])
-        self.accept('w-up', self.upTurn, [0])
-        self.accept('s', self.downTurn, [1])
-        self.accept('s-up', self.downTurn, [0])
+        self.accept(controlConfig["up"], self.upTurn, [1])
+        self.accept(controlConfig["up"] + '-up', self.upTurn, [0])
+        self.accept(controlConfig["down"], self.downTurn, [1])
+        self.accept(controlConfig["down"] + '-up', self.downTurn, [0])
 
-        self.accept('f', self.Fire)
+        # Fire
+        self.accept(controlConfig["fire"], self.Fire)
 
     def Fire(self):
         if self.missileBay:

@@ -24,6 +24,19 @@ class SpJm(ShowBase):
 
     def __init__(self):
 
+        self.controlConfig = {
+            "forward" : "space",
+            "run" : "r",
+            "precise" : "g",
+            "leftTurn" : "a",
+            "rightTurn" : "d",
+            "leftRot" : "q",
+            "rightRot" : "e",
+            "up" : "w",
+            "down" : "s",
+            "fire": "f"
+        }
+
         ShowBase.__init__(self)
 
         # Toggles if you see the Debug Axis Arrows 
@@ -94,7 +107,7 @@ class SpJm(ShowBase):
         self.accept('v', self.changeView)
 
         # Runs function to set player input keys
-        self.Hero.setKeyBindings()
+        self.Hero.setKeyBindings(self.controlConfig)
         self.Hero.EnableHUD()
 
     def menuSetCamera(self):
@@ -128,8 +141,8 @@ class SpJm(ShowBase):
                             '          OOOOOOOOOOOOOOOOO\n'
                             '       OOOOOOOOOOOOOOOOO\n')
         self.cornerTextNode = self.render2d.attach_new_node(cornerText)
-        self.cornerTextNode.set_scale(0.04)
-        self.cornerTextNode.set_pos(0.8, 0, -0.675)
+        self.cornerTextNode.set_scale(0.035)
+        self.cornerTextNode.set_pos(0.8, 0, -0.725)
 
     def heroSetCamera(self):
         """ Prepares Camera for use on the Player """
