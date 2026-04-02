@@ -113,7 +113,6 @@ class SpJm(ShowBase):
         self.Hero.setKeyBindings(self.controlConfig)
         self.Hero.EnableHUD()
 
-
     def menuSetCamera(self):
         """ Prepares Camera for use on the Menu """
         # Sets up camera
@@ -137,6 +136,22 @@ class SpJm(ShowBase):
         self.startTextNode = self.render2d.attach_new_node(startText)
         self.startTextNode.set_scale(0.04)
 
+        # Creates options text
+        optionsText = TextNode("Start")
+        optionsText.setText('O = OPTIONS?????????')
+        optionsText.set_align(TextNode.A_center)
+        self.optionsTextNode = self.render2d.attach_new_node(optionsText)
+        self.optionsTextNode.set_scale(0.04)
+        self.optionsTextNode.set_pos(0, 0, 0.25)
+
+        # Creates Key Text
+        valueText = TextNode("ValueText")
+        valueText.setText('')
+        valueText.set_align(TextNode.A_center)
+        self.optionsValueTextNode = self.render2d.attach_new_node(optionsText)
+        self.optionsValueTextNode.set_scale(0.04)
+        self.optionsValueTextNode.set_pos(0, 0, 0.20)
+
         # Creates corner text
         cornerText = TextNode("Corner")
         cornerText.setText(  'S\n' \
@@ -151,6 +166,51 @@ class SpJm(ShowBase):
         self.cornerTextNode = self.render2d.attach_new_node(cornerText)
         self.cornerTextNode.set_scale(0.035)
         self.cornerTextNode.set_pos(0.8, 0, -0.725)
+
+        self.acceptOnce('o', self.options)
+
+    def options(self):
+        self.option = 0
+        self.accept("w", self.optionUp)
+        self.accept("s", self.optionDown)
+
+        self.configKeys = list(self.controlConfig.keys())
+        self.configValues = list(self.controlConfig.values())
+              
+        self.updateOptionText()
+
+    def optionUp(self):
+        if(self.option+1 < len(self.configKeys)):
+            self.option += 1
+        else:
+            self.option = 0
+        self.updateOptionText()
+    def optionDown(self):
+        if(self.option > 0):
+            self.option -= 1
+        else:
+            self.option = len(self.configKeys)-1
+        self.updateOptionText()
+        
+    def updateOptionText(self):
+        if(self.optionsTextNode):
+            self.optionsTextNode.detachNode()
+        if(self.optionsValueTextNode):
+            self.optionsValueTextNode.detachNode()
+
+        keyText = TextNode("keyText")
+        keyText.setText(self.configKeys[self.option])
+        keyText.set_align(TextNode.A_center)
+        self.optionsTextNode = self.render2d.attach_new_node(keyText)
+        self.optionsTextNode.set_scale(0.04)
+        self.optionsTextNode.set_pos(0, 0, 0.5)
+
+        valueText = TextNode("valueText")
+        valueText.setText(self.configValues[self.option])
+        valueText.set_align(TextNode.A_center)
+        self.optionsValueTextNode = self.render2d.attach_new_node(valueText)
+        self.optionsValueTextNode.set_scale(0.04)
+        self.optionsValueTextNode.set_pos(0, 0, 0.4)
 
     def heroSetCamera(self):
         """ Prepares Camera for use on the Player """
