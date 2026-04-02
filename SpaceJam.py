@@ -24,6 +24,7 @@ class SpJm(ShowBase):
 
     def __init__(self):
 
+        # Control Configuration
         self.controlConfig = {
             "forward" : "space",
             "run" : "r",
@@ -34,7 +35,8 @@ class SpJm(ShowBase):
             "rightRot" : "e",
             "up" : "w",
             "down" : "s",
-            "fire": "f"
+            "fire": "f",
+            "view": "v"
         }
 
         ShowBase.__init__(self)
@@ -83,19 +85,20 @@ class SpJm(ShowBase):
             nickName = self.droneNumberUpdate()
             self.drawCircleZ(self.Planet6, nickName, j, fullCycle, 3)
 
+        # Sets up menu
         self.menuSetCamera()
-
-        self.accept('enter', self.initPart2)
+        self.acceptOnce('enter', self.initPart2)
 
     def initPart2(self):
 
+        # Detaches Menu Text Nodes
         self.titleTextNode.detachNode()
         self.startTextNode.detachNode()
         self.cornerTextNode.detachNode()
 
         # Sets up camera
         self.heroSetCamera()
-        print(self.Hero.modelNode.getPos())
+        #print(self.Hero.modelNode.getPos())
   
         # Sets the input keys 1, 2, 3, 4 to change the universe skybox
         self.accept("1", self.UniverseBlue)
@@ -104,32 +107,37 @@ class SpJm(ShowBase):
         self.accept("4", self.UniverseRed)
 
         # Sets input for changing viewmode
-        self.accept('v', self.changeView)
+        self.accept(self.controlConfig['view'], self.changeView)
 
         # Runs function to set player input keys
         self.Hero.setKeyBindings(self.controlConfig)
         self.Hero.EnableHUD()
 
+
     def menuSetCamera(self):
         """ Prepares Camera for use on the Menu """
+        # Sets up camera
         self.disableMouse()
         self.camera.reparentTo(self.Menu.modelNode)
         self.Menu.modelNode.setHpr(-90, 0, -90)
         self.Menu.modelNode.setFluidPos(self.Menu.modelNode.getPos() + Vec3(-340, 0, 900))
         self.camera.setH(self.camera, 65)
 
+        # Creates title text
         titleText = TextNode("Title")
         titleText.setText("ABRASIVE!!!!!!!!!!!!!\n!!!!!!!!!!")
         self.titleTextNode = self.render2d.attach_new_node(titleText)
         self.titleTextNode.set_scale(0.125)
         self.titleTextNode.set_pos(-1, 0, 0.9)
 
+        # Creates start text
         startText = TextNode("Start")
         startText.setText('!"!"!"ENTER!"!"!"!"!\nComme\nnces!')
         startText.set_align(TextNode.A_center)
         self.startTextNode = self.render2d.attach_new_node(startText)
         self.startTextNode.set_scale(0.04)
 
+        # Creates corner text
         cornerText = TextNode("Corner")
         cornerText.setText(  'S\n' \
                             ' PJ\n' \
@@ -150,6 +158,7 @@ class SpJm(ShowBase):
         self.camera.reparentTo(self.Hero.modelNode)
         self.camera.setFluidPos(0.325, 0, -0.35)
         self.camera.setHpr(0, 270, 0)
+        self.Menu.modelNode.detachNode()
 
     def droneNumberUpdate(self):
         """# Makes sure each planet's drone has unique IDS"""
