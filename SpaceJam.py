@@ -8,6 +8,8 @@ import DefensePaths as defensePaths
 import SpaceJamClasses as spaceJamClasses
 import Player as playerClasses
 
+from panda3d.core import TextNode
+
 # Universe Color Keys
 # Blue = 1
 # Green = 2
@@ -74,6 +76,10 @@ class SpJm(ShowBase):
 
     def initPart2(self):
 
+        self.titleTextNode.detachNode()
+        self.startTextNode.detachNode()
+        self.cornerTextNode.detachNode()
+
         # Sets up camera
         self.heroSetCamera()
         print(self.Hero.modelNode.getPos())
@@ -97,8 +103,33 @@ class SpJm(ShowBase):
         self.camera.reparentTo(self.Menu.modelNode)
         self.Menu.modelNode.setHpr(-90, 0, -90)
         self.Menu.modelNode.setFluidPos(self.Menu.modelNode.getPos() + Vec3(-340, 0, 900))
-        self.camera.setFluidPos(0, 0, 0)
         self.camera.setH(self.camera, 65)
+
+        titleText = TextNode("Title")
+        titleText.setText("ABRASIVE!!!!!!!!!!!!!\n!!!!!!!!!!")
+        self.titleTextNode = self.render2d.attach_new_node(titleText)
+        self.titleTextNode.set_scale(0.125)
+        self.titleTextNode.set_pos(-1, 0, 0.9)
+
+        startText = TextNode("Start")
+        startText.setText('!"!"!"ENTER!"!"!"!"!\nComme\nnces!')
+        startText.set_align(TextNode.A_center)
+        self.startTextNode = self.render2d.attach_new_node(startText)
+        self.startTextNode.set_scale(0.04)
+
+        cornerText = TextNode("Corner")
+        cornerText.setText(  'S\n' \
+                            ' PJ\n' \
+                            '  AAP\n' \
+                            '   CMR\n' \
+                            '    E  O\n' \
+                            '        T\n' \
+                            '         OOOOOOOOOOOOOOOOO\n' \
+                            '          OOOOOOOOOOOOOOOOO\n'
+                            '       OOOOOOOOOOOOOOOOO\n')
+        self.cornerTextNode = self.render2d.attach_new_node(cornerText)
+        self.cornerTextNode.set_scale(0.04)
+        self.cornerTextNode.set_pos(0.8, 0, -0.675)
 
     def heroSetCamera(self):
         """ Prepares Camera for use on the Player """
